@@ -21,12 +21,11 @@ phases:
   #     - php -r "unlink('composer-setup.php');"
   #     - mv composer.phar /usr/local/bin/composer
 
-
   build:
     commands:
       - zip -r wordpress_beanstalk_$CODEBUILD_BUILD_NUMBER.zip . -x "my_archive.zip" "buildspec.yml"
       - aws s3 cp wordpress_beanstalk_$CODEBUILD_BUILD_NUMBER.zip s3://$S3_BUCKET_NAME/$S3_KEY/wordpress_beanstalk_$CODEBUILD_BUILD_NUMBER.zip
-    
+
   post_build:
     commands:
       - |
