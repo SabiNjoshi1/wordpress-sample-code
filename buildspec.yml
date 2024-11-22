@@ -1,0 +1,42 @@
+version: 0.2
+
+env:
+  variables:
+    AWS_REGION: "us-east-1"
+    APP_NAME: "wpapp-ue1-wp-dmdlpps-eb-app-testcd "
+    # APP_NAME: "tfmodule-ue1-eb-d-eb-app-test"
+    ENV_NAME: "wpapp-ue1-wp-dmdlpps-eb-env "
+    # ENV_NAME: "tfmodule-ue1-eb-d-eb-env"
+    S3_BUCKET_NAME: "elasticbeanstalk-us-east-1-426857564226"
+    S3_KEY: "app/staging"
+
+phases:
+  # pre_build:
+  #   commands:
+  #     - curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+  #     - chmod +x wp-cli.phar
+  #     - mv wp-cli.phar /usr/local/bin/wp
+  #     - php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+  #     - php composer-setup.php
+  #     - php -r "unlink('composer-setup.php');"
+  #     - mv composer.phar /usr/local/bin/composer
+
+
+  build:
+    commands:
+      - zip -r wordpress_beanstalk_$CODEBUILD_BUILD_NUMBER.zip . -x "my_archive.zip" "buildspec.yml"
+      - aws s3 cp wordpress_beanstalk_$CODEBUILD_BUILD_NUMBER.zip s3://$S3_BUCKET_NAME/$S3_KEY/wordpress_beanstalk_$CODEBUILD_BUILD_NUMBER.zip
+    
+  post_build:
+    commands:
+      - |
+        aws elasticbeanstalk create-application-version \
+          --application-name "$APP_NAME" \
+          --region "$AWS_REGION" \
+          --version-label "$CODEBUILD_BUILD_NUMBER" \
+          --source-bundle S3Bucket="$S3_BUCKET_NAME",S3Key="$S3_KEY/wordpress_beanstalk_$CODEBUILD_BUILD_NUMBER.zip"
+      - |
+        aws elasticbeanstalk update-environment \
+          --application-name "$APP_NAME" \
+          --environment-name "$ENV_NAME" \
+          --version-label "$CODEBUILD_BUILD_NUMBER"
