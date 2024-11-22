@@ -3,7 +3,7 @@ version: 0.2
 env:
   variables:
     AWS_REGION: "us-east-1"
-    APP_NAME: "wpapp-ue1-wp-dmdlpps-eb-app-testcd "
+    APP_NAME: "wpapp-ue1-wp-dmdlpps-eb-app-test"
     # APP_NAME: "tfmodule-ue1-eb-d-eb-app-test"
     ENV_NAME: "wpapp-ue1-wp-dmdlpps-eb-env "
     # ENV_NAME: "tfmodule-ue1-eb-d-eb-env"
